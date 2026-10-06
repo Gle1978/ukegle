@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#FF6B4A">
+<meta name="description" content="UkeGle เว็บแอปหัดเล่นอูคูเลเลสำหรับมือใหม่ คอร์ดง่าย เพลงย้อนยุคไทยและสากล">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="UkeGle">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>UkeGle</title>
+<style>:root{padding-top:env(safe-area-inset-top,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600&family=Kanit:wght@500;600;700&display=swap">
+<style>
+/* Layout: one phone-width column, content scrolls, bottom tab bar pinned; song sheet widens in stand mode */
+:root{
+  --bg:#FFF8EE; --card:#FFFFFF; --soft:#FDEBD3; --ink:#2B2118; --muted:#7A6A5C; --line:#EADBC8;
+  --pri:#FF6B4A; --pri-text:#C9442A; --on-pri:#FFFFFF; --sec:#1FA39A; --sec-text:#127068; --ok:#22A06B;
+  --wood:#F6E3C6; --fret:#8C6A4A; --nut:#2B2118;
+  --f1:#1FA39A; --f2:#FF6B4A; --f3:#E59E00; --f4:#8B5CF6;
+  --l0:#DDF5EC; --l1:#D6F0EE; --l2:#FFF0C7; --l3:#FFE0D8;
+  --dark-panel:#2B2118; --on-dark:#FFFFFF;
+  --display:"Kanit","Noto Sans Thai","Leelawadee UI",Tahoma,sans-serif;
+  --body:"Anuphan","Noto Sans Thai","Leelawadee UI",Tahoma,sans-serif;
+  --r-md:16px; --r-lg:24px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1A1510; --card:#241E18; --soft:#3A2A1C; --ink:#F6ECDF; --muted:#B9A893; --line:#3D3329;
+  --pri-text:#FF8E73; --sec-text:#5CCFC4; --wood:#3B3026; --fret:#B8946B; --nut:#F6ECDF;
+  --l0:#173A30; --l1:#163836; --l2:#3D3317; --l3:#45271D; --dark-panel:#0F0C09; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1A1510; --card:#241E18; --soft:#3A2A1C; --ink:#F6ECDF; --muted:#B9A893; --line:#3D3329;
+  --pri-text:#FF8E73; --sec-text:#5CCFC4; --wood:#3B3026; --fret:#B8946B; --nut:#F6ECDF;
+  --l0:#173A30; --l1:#163836; --l2:#3D3317; --l3:#45271D; --dark-panel:#0F0C09; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--sec);outline-offset:2px;border-radius:8px}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.3;margin:0;text-wrap:balance}
+h1{font-size:26px} h2{font-size:20px} h3{font-size:17px}
+p{margin:0}
+.app{max-width:560px;margin:0 auto;min-height:100%;display:flex;flex-direction:column}
+.app.wide{max-width:1040px}
+main{flex:1;padding:24px 16px 120px;display:flex;flex-direction:column;gap:24px}
+.muted{color:var(--muted)} .cap{font-size:13px;line-height:1.5}
+.eyebrow{font-family:var(--display);font-weight:500;font-size:12px;letter-spacing:.04em}
+.stack{display:flex;flex-direction:column;gap:8px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.soft{background:var(--soft);border-color:transparent}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:8px 24px;border-radius:999px;border:0;background:var(--pri);color:var(--on-pri);font-weight:500}
+.btn.block{width:100%}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+.btn.small{min-height:36px;padding:4px 16px;font-size:14px}
+.btn.soft-btn{background:var(--soft);color:var(--ink)}
+.chip{display:inline-flex;align-items:center;min-height:36px;padding:4px 16px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-weight:500;font-size:15px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;font-family:var(--display);font-weight:500;font-size:12px;white-space:nowrap}
+.lv0{background:var(--l0)} .lv1{background:var(--l1)} .lv2{background:var(--l2)} .lv3{background:var(--l3)}
+.brand{font-family:var(--display);font-weight:700;font-size:34px;color:var(--pri-text);line-height:1.1}
+/* tab bar */
+.tabbar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));z-index:20}
+.tabbar .in{max-width:560px;margin:0 auto;display:flex;justify-content:space-between}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;padding:4px 0;color:var(--muted);font-family:var(--display);font-size:12px;font-weight:500}
+.tab svg{width:24px;height:24px}
+.tab[aria-current="page"]{color:var(--pri-text)}
+/* chord diagram */
+.chord-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+button.chord-card{width:100%}
+.chord-card .nm{font-family:var(--display);font-weight:600;font-size:20px;line-height:1}
+.chord-card.known{border-color:var(--ok);box-shadow:inset 0 0 0 1px var(--ok)}
+.chord-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.diagram{display:block}
+.legend{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px;font-size:13px}
+.dot{width:14px;height:14px;border-radius:50%;display:inline-block}
+/* songs */
+.song{display:flex;flex-direction:column;gap:6px;text-align:left;width:100%}
+.song-top{display:flex;gap:12px;align-items:center}
+.cover{width:44px;height:44px;border-radius:12px;background:var(--l2);display:grid;place-items:center;flex:none;color:var(--ink)}
+.cover.ok{background:var(--l0)}
+.song-title{font-weight:500;line-height:1.35}
+.song-chords{font-family:var(--display);font-weight:600;color:var(--pri-text);font-size:15px}
+.listen{display:inline-flex;align-items:center;gap:8px;padding:4px 14px;border-radius:999px;background:var(--soft);text-decoration:none;font-weight:500;font-size:14px;align-self:flex-start}
+/* progress */
+.track{height:10px;border-radius:5px;background:var(--l1);overflow:hidden}
+.track i{display:block;height:100%;background:var(--sec);border-radius:5px;transition:width .4s}
+/* path */
+.path{display:flex;flex-direction:column}
+.stage{display:grid;grid-template-columns:40px 1fr;gap:12px}
+.rail{display:flex;flex-direction:column;align-items:center}
+.node{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--line);color:var(--muted);font-family:var(--display);font-weight:600;flex:none}
+.node.done{background:var(--ok);color:#fff} .node.now{background:var(--pri);color:#fff}
+.rail .ln{width:4px;flex:1;background:var(--line);min-height:16px}
+.rail .ln.done{background:var(--ok)}
+.stage .card{margin-bottom:16px}
+.stage.now .card{background:var(--soft);border:2px solid var(--pri)}
+.stage.lock .card{opacity:.72}
+.cpill{display:inline-flex;padding:2px 10px;border-radius:8px;background:var(--ink);color:var(--bg);font-family:var(--display);font-weight:600}
+/* tuner guide */
+.readouts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.readout{background:var(--dark-panel);border-radius:14px;padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--on-dark);text-align:center}
+.readout b{font-family:var(--display);font-size:26px;line-height:1}
+.readout small{font-family:var(--display);font-size:12px;line-height:1.35}
+.string-row{display:flex;gap:12px;align-items:center}
+.note{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-family:var(--display);font-weight:600;font-size:20px;color:#fff;flex:none}
+.num{width:32px;height:32px;border-radius:50%;background:var(--pri);color:#fff;display:grid;place-items:center;font-weight:600;flex:none}
+/* sheet */
+.sheet-head{display:flex;gap:8px;align-items:center}
+.iconbtn{width:44px;height:44px;border-radius:12px;border:0;background:transparent;display:grid;place-items:center;flex:none;color:var(--ink)}
+.iconbtn:hover{background:var(--soft)}
+.sheet-chords{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.beats{display:flex;justify-content:space-between;gap:4px}
+.beat{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;flex:1}
+.beat svg{width:28px;height:28px}
+.beat small{font-size:12px;color:var(--muted);font-family:var(--display)}
+.lyrics{display:flex;flex-direction:column;gap:6px;font-size:var(--lyric,20px)}
+.lyrics .sec{font-family:var(--display);font-size:12px;color:var(--muted);margin-top:10px;letter-spacing:.04em}
+.line{display:flex;flex-wrap:wrap;column-gap:.3em;align-items:flex-end}
+.chunk{display:inline-flex;flex-direction:column}
+.chunk .c{font-family:var(--display);font-weight:600;color:var(--pri-text);font-size:.85em;line-height:1.2;min-height:1.2em}
+.chunk .w{font-weight:500;line-height:1.35;white-space:pre}
+.dock{position:fixed;left:0;right:0;bottom:calc(72px + env(safe-area-inset-bottom,0px));z-index:15;padding:8px 16px;pointer-events:none}
+.dock .in{max-width:560px;margin:0 auto;background:var(--dark-panel);color:var(--on-dark);border-radius:var(--r-lg);padding:8px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;pointer-events:auto}
+.app.wide ~ .dock .in{max-width:1040px}
+.play{width:48px;height:48px;border-radius:50%;background:var(--pri);border:0;display:grid;place-items:center;color:#fff;flex:none}
+.stepper{display:flex;flex-direction:column;align-items:center;gap:0;min-width:0}
+.stepper small{font-size:12px;opacity:.75}
+.stepper .row{gap:4px;flex-wrap:nowrap}
+.stepper button{width:32px;height:32px;border-radius:50%;border:0;background:rgba(255,255,255,.12);color:#fff;font-size:18px;line-height:1}
+.stepper b{font-weight:500;min-width:3.2em;text-align:center}
+.placeholder{border:1.5px dashed var(--line);border-radius:var(--r-md);padding:16px;display:flex;flex-direction:column;gap:6px}
+.stand-grid{display:grid;gap:24px}
+.app.wide .stand-grid{grid-template-columns:150px minmax(0,1fr)}
+.app.wide .stand-grid .sheet-chords{grid-template-columns:1fr;position:sticky;top:12px;align-self:start}
+.app.wide .lyrics{--lyric:26px}
+/* onboarding */
+.ob{min-height:100%;display:flex;flex-direction:column;justify-content:space-between;gap:24px;padding:32px 24px calc(32px + env(safe-area-inset-bottom,0px));max-width:560px;margin:0 auto}
+.ob .top{display:flex;flex-direction:column;gap:20px}
+.ob .bot{display:flex;flex-direction:column;gap:8px}
+.splash{background:var(--pri);color:#fff;justify-content:center;align-items:center;text-align:center;max-width:none}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.steps i{height:8px;border-radius:4px;background:var(--line)} .steps i.on{background:var(--pri)}
+.opt{display:flex;gap:16px;align-items:center;padding:16px;border-radius:var(--r-md);border:1px solid var(--line);background:var(--card);text-align:left;width:100%}
+.opt[aria-checked="true"]{background:var(--l1);border:2px solid var(--sec)}
+.opt .em{width:44px;height:44px;border-radius:12px;background:var(--soft);display:grid;place-items:center;font-size:22px;flex:none}
+.opt .radio{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:none;margin-left:auto}
+.opt[aria-checked="true"] .radio{background:var(--sec);border-color:var(--sec)}
+.str-pick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.str-pick button{border-radius:14px;padding:10px 4px;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;align-items:center;font-family:var(--display)}
+.str-pick button b{font-size:20px} .str-pick button small{font-size:12px;color:var(--muted)}
+.str-pick button[aria-pressed="true"]{color:#fff;border-color:transparent}
+.str-pick button[aria-pressed="true"] small{color:#fff}
+.hero-circle{width:min(300px,80vw);aspect-ratio:1;border-radius:50%;background:var(--soft);display:grid;place-items:center;margin:0 auto;max-width:100%}
+.celebrate{position:relative;height:240px}
+.celebrate .ok{position:absolute;left:50%;top:40px;transform:translateX(-50%);width:150px;height:150px;border-radius:50%;background:var(--ok);display:grid;place-items:center}
+.conf{position:absolute;border-radius:50%}
+/* bottom sheet */
+.scrim{position:fixed;inset:0;background:rgba(20,14,8,.45);z-index:40;display:flex;align-items:flex-end;justify-content:center}
+.sheet-modal{background:var(--card);width:100%;max-width:560px;border-radius:24px 24px 0 0;padding:20px 16px calc(24px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px;max-height:90%;overflow:auto}
+.howto{display:flex;flex-direction:column;gap:8px}
+.howto div{display:flex;gap:12px;align-items:center}
+.fbadge{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:600;flex:none;font-size:14px}
+.toast{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 18px;border-radius:999px;z-index:50;font-weight:500;font-size:14px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.on-sheet.standing .tabbar{display:none}
+.on-sheet.standing .dock{bottom:0;padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))}
+@media (max-height:520px){.on-sheet .tabbar{display:none}.on-sheet .dock{bottom:0;padding-bottom:calc(6px + env(safe-area-inset-bottom,0px))}
+ .dock .in{padding:4px 12px}.play{width:40px;height:40px}.stepper small{display:none}.on-sheet main{padding-top:12px}}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+@keyframes pop{from{transform:translateX(-50%) scale(.6);opacity:0}to{transform:translateX(-50%) scale(1);opacity:1}}
+.celebrate .ok{animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
+</style>
+
+</head>
+<body>
+<div id="root"></div>
+<div id="tabs"></div>
+<div id="dockwrap"></div>
+<div id="modal"></div>
+
+<script>
+/* ================= DATA ================= */
+const STR_NAME=['สายบนสุด (G)','สายที่สอง (C)','สายที่สาม (E)','สายล่างสุด (A)'];
+const FINGER=['','นิ้วชี้','นิ้วกลาง','นิ้วนาง','นิ้วก้อย'];
+/* dots: [string 0=G..3=A, fret, finger] ; frets: per string */
+const CHORDS={
+ 'Am7':{frets:[0,0,0,0],dots:[]},
+ 'C':{frets:[0,0,0,3],dots:[[3,3,3]]},
+ 'C7':{frets:[0,0,0,1],dots:[[3,1,1]]},
+ 'Am':{frets:[2,0,0,0],dots:[[0,2,2]]},
+ 'A7':{frets:[0,1,0,0],dots:[[1,1,1]]},
+ 'F':{frets:[2,0,1,0],dots:[[0,2,2],[2,1,1]]},
+ 'A':{frets:[2,1,0,0],dots:[[0,2,2],[1,1,1]]},
+ 'G7':{frets:[0,2,1,2],dots:[[1,2,2],[2,1,1],[3,2,3]]},
+ 'G':{frets:[0,2,3,2],dots:[[1,2,1],[2,3,3],[3,2,2]]},
+ 'Em':{frets:[0,4,3,2],dots:[[1,4,3],[2,3,2],[3,2,1]]},
+ 'Dm':{frets:[2,2,1,0],dots:[[0,2,2],[1,2,3],[2,1,1]]},
+ 'D':{frets:[2,2,2,0],dots:[[0,2,1],[1,2,2],[2,2,3]]},
+ 'E7':{frets:[1,2,0,2],dots:[[0,1,1],[1,2,2],[3,2,3]]},
+};
+const CHORD_ORDER=['Am7','C','C7','Am','A7','F','A','G7','G','Em','Dm','D','E7'];
+const nFing=c=>CHORDS[c].dots.length;
+
+const STAGES=[
+ {t:'จับคอร์ดแรก',c:['C','Am'],note:'ฝึกเปลี่ยนคอร์ด C กับ Am สลับไปมาจนคล่อง'},
+ {t:'สามคอร์ดยอดฮิต',c:['F','G']},
+ {t:'เพิ่มสีสันด้วยคอร์ด 7',c:['G7','C7']},
+ {t:'คอร์ดไมเนอร์ตัวที่สอง',c:['Dm']},
+ {t:'เพลงซึ้งเพลงฮิต',c:['Em']},
+ {t:'คอร์ด D เปิดอีกหลายเพลง',c:['D','Am7']},
+ {t:'ปิดท้ายด้วยคีย์ A',c:['A','A7','E7']},
+];
+
+/* Songs. pd:true = public domain, lyrics included ([X] marks chord change above the following word).
+   Licensed songs: lyrics:null until permission is granted — add lyrics in the same [X] format. */
+const UT='https://ukutabs.com';
+const SONGS=[
+ {id:'saints',t:'When the Saints Go Marching In',a:'เพลงพื้นบ้านอเมริกัน',key:'C',c:['C','C7','F','G7'],strum:'D D D D',bpm:100,pd:true,
+  lyrics:[['ท่อน 1',['Oh when the [C]saints go marching in','Oh when the saints go marching [G7]in','Oh Lord I [C]want to [C7]be in that [F]number','When the [C]saints go [G7]marching [C]in']],
+          ['ท่อน 2',['Oh when the [C]sun refuse to shine','Oh when the sun refuse to [G7]shine','Oh Lord I [C]want to [C7]be in that [F]number','When the [C]sun re-[G7]fuse to [C]shine']],
+          ['ท่อน 3',['Oh when the [C]stars fall from the sky','Oh when the stars fall from the [G7]sky','Oh Lord I [C]want to [C7]be in that [F]number','When the [C]stars fall [G7]from the [C]sky']]]},
+ {id:'redriver',t:'Red River Valley',a:'เพลงพื้นบ้านอเมริกัน',key:'C',c:['C','C7','F','G7'],strum:'D D D D',bpm:90,pd:true,
+  lyrics:[['ท่อน 1',['From this [C]valley they say you are going','We will miss your bright eyes and sweet [G7]smile','For they [C]say you are taking the [C7]sunshine','That has [F]brightened our pathway a while']],
+          ['ฮุก',['Come and [C]sit by my side if you love me','Do not hasten to bid me a-[G7]dieu','But re-[C]member the Red River [G7]Valley','And the cowboy who loved you so [C]true']]]},
+ {"id": "jetplane", "t": "Leaving On A Jet Plane", "a": "John Denver", "y": 1969, "key": "G", "c": ["C", "D", "G"], "strum": "D - D U - U D -", "bpm": 92, "src": "https://ukutabs.com/j/john-denver/leaving-on-a-jet-plane/", "yt": "https://www.youtube.com/watch?v=SneCkM0bJq0"},
+ {"id": "blowin", "t": "Blowin' In The Wind", "a": "Bob Dylan", "y": 1963, "key": "G", "c": ["C", "D", "G"], "strum": "D - D U - U D U", "bpm": 100, "src": "https://ukutabs.com/b/bob-dylan/blowin-in-the-wind/", "yt": "https://www.youtube.com/watch?v=MMFj8uDubsE"},
+ {"id": "badmoon", "t": "Bad Moon Rising", "a": "Creedence Clearwater Revival", "y": 1969, "key": "D", "c": ["A", "D", "G"], "strum": "D U D U D U D U", "bpm": 90, "src": "https://ukutabs.com/c/creedence-clearwater-revival/bad-moon-rising/", "yt": "https://www.youtube.com/watch?v=qrP5IClb6b8"},
+ {"id": "twist", "t": "Twist And Shout", "a": "The Beatles", "y": 1963, "key": "D", "c": ["A", "A7", "C", "D", "G"], "strum": "D U D U D U D U", "bpm": 124, "src": "https://ukutabs.com/t/the-beatles/twist-and-shout/", "yt": "https://www.youtube.com/watch?v=oLIYPdZeYeU"},
+ {"id": "lovemedo", "t": "Love Me Do", "a": "The Beatles", "y": 1962, "key": "C", "c": ["C", "D", "F", "G", "G7"], "strum": "D U D U D U D U", "bpm": 148, "src": "https://ukutabs.com/t/the-beatles/love-me-do/"},
+ {"id": "labamba", "t": "La Bamba", "a": "Ritchie Valens", "y": 1958, "key": "C", "c": ["C", "F", "G"], "strum": "D - D U D U D U", "bpm": 150, "src": "https://ukutabs.com/r/ritchie-valens/la-bamba/"},
+ {"id": "heaven-door", "t": "Knockin' On Heaven's Door", "a": "Bob Dylan", "y": 1973, "key": "G", "c": ["G", "D", "C", "Am7"], "strum": "D - D U - U D U", "bpm": 72, "src": "https://ukutabs.com/b/bob-dylan/knocking-on-heavens-door/", "yt": "https://www.youtube.com/watch?v=rm9coqlk8fY"},
+ {"id": "rain", "t": "Have You Ever Seen The Rain", "a": "Creedence Clearwater Revival", "y": 1970, "key": "C", "c": ["C", "G", "F", "Am"], "strum": "D U D U D U D U", "bpm": 116, "src": "https://ukutabs.com/c/creedence-clearwater-revival/have-you-ever-seen-the-rain/", "yt": "https://www.youtube.com/watch?v=g4flAZEgtjs"},
+ {"id": "feliz", "t": "Feliz Navidad", "a": "José Feliciano", "y": 1970, "key": "G", "c": ["C", "D", "Em", "G"], "strum": "D - D U - U D U", "bpm": 150, "src": "https://ukutabs.com/j/jose-feliciano/feliz-navidad/", "yt": "https://www.youtube.com/watch?v=N8NcQzMQN_U"},
+ {"id": "leanonme", "t": "Lean On Me", "a": "Bill Withers", "y": 1972, "key": "C", "c": ["C", "Dm", "Em", "F", "G"], "strum": "D - D U - U D -", "bpm": 79, "src": "https://ukutabs.com/b/bill-withers/lean-on-me/", "yt": "https://www.youtube.com/watch?v=gOZgo8gMIoM"},
+ {"id": "jolene", "t": "Jolene", "a": "Dolly Parton", "y": 1973, "key": "Am", "c": ["Am", "C", "G", "Em"], "strum": "D - D - D U D U", "bpm": 112, "src": "https://ukutabs.com/d/dolly-parton/jolene/", "yt": "https://www.youtube.com/watch?v=Ixrje2rXLMA"},
+ {"id": "dust", "t": "Dust In The Wind", "a": "Kansas", "y": 1977, "key": "C", "c": ["Am", "C", "D", "Dm", "G"], "strum": "D - D U - U D -", "bpm": 92, "src": "https://ukutabs.com/k/kansas/dust-in-the-wind/", "yt": "https://www.youtube.com/watch?v=49Fs_DjXbYA"},
+ {"id": "wonderful", "t": "Wonderful Tonight", "a": "Eric Clapton", "y": 1977, "key": "G", "c": ["C", "D", "Em", "G", "G7"], "strum": "D - D U - U D -", "bpm": 96, "src": "https://ukutabs.com/e/eric-clapton/wonderful-tonight/", "yt": "https://www.youtube.com/watch?v=KIzOxTCOc_0"},
+ {"id": "wishyou", "t": "Wish You Were Here", "a": "Pink Floyd", "y": 1975, "key": "G", "c": ["A", "Am", "C", "D", "Em", "G"], "strum": "D - D U - U D U", "bpm": 120, "src": "https://ukutabs.com/p/pink-floyd/wish-you-were-here/", "yt": "https://music.youtube.com/watch?v=K6qj09OHvjw"},
+ {"id": "topworld", "t": "Top Of The World", "a": "Carpenters", "y": 1972, "key": "C", "c": ["C", "G", "Em", "Dm", "F", "Am"], "strum": "D - D U - U D U", "bpm": 130, "src": "https://ukutabs.com/t/the-carpenters/top-of-the-world/"},
+ {"id": "vain", "t": "You're So Vain", "a": "Carly Simon", "y": 1972, "key": "Am", "c": ["Am", "F", "G", "Em", "C", "Dm"], "strum": "D - D U - U D -", "bpm": 120, "src": "https://ukutabs.com/c/carly-simon/youre-so-vain/", "yt": "https://www.youtube.com/watch?v=2ViEloG7wjc"},
+ {"id": "lastxmas", "t": "Last Christmas", "a": "Wham!", "y": 1984, "key": "C", "c": ["C", "Am", "Dm", "G"], "strum": "D - D U - U D U", "bpm": 108, "src": "https://ukutabs.com/w/wham/last-christmas/", "yt": "https://www.youtube.com/watch?v=E8gmARGvPlI"},
+ {"id": "tiger", "t": "Eye Of The Tiger", "a": "Survivor", "y": 1982, "key": "Am", "c": ["Am", "C", "F", "G"], "strum": "D - D - D U D U", "bpm": 109, "src": "https://ukutabs.com/s/survivor/eye-of-the-tiger/", "yt": "https://www.youtube.com/watch?v=btPJPFnesV4"},
+ {"id": "keeplove", "t": "Keep On Loving You", "a": "REO Speedwagon", "y": 1980, "key": "Am", "c": ["F", "G", "Am", "C"], "strum": "D - D - D U D U", "bpm": 78, "src": "https://ukutabs.com/r/reo-speedwagon/keep-on-loving-you/"},
+ {"id": "beatit", "t": "Beat It", "a": "Michael Jackson", "y": 1983, "key": "Em", "c": ["Em", "D", "C"], "strum": "D - D - D U D U", "bpm": 139, "src": "https://ukutabs.com/m/michael-jackson/beat-it/", "yt": "https://www.youtube.com/watch?v=oRdxUFDoQe0"},
+ {"id": "heaven", "t": "Heaven", "a": "Bryan Adams", "y": 1984, "key": "C", "c": ["C", "Am", "G", "F", "Dm"], "strum": "D - D U - U D -", "bpm": 62, "src": "https://ukutabs.com/b/bryan-adams/heaven-two/", "yt": "https://www.youtube.com/watch?v=3eT464L1YRA"},
+ {"id": "wanted", "t": "Wanted Dead Or Alive", "a": "Bon Jovi", "y": 1986, "key": "C", "c": ["C", "D", "F", "G"], "strum": "D - D - D U D U", "bpm": 120, "src": "https://ukutabs.com/b/bon-jovi/wanted-dead-or-alive/", "yt": "https://music.youtube.com/watch?v=SRvCvsRp5ho"},
+ {"id": "hallelujah", "t": "Hallelujah", "a": "Leonard Cohen", "y": 1984, "key": "C", "c": ["Am", "C", "Em", "F", "G"], "strum": "D - - D - U", "bpm": 56, "src": "https://ukutabs.com/l/leonard-cohen/hallelujah/", "meter": "6/8", "yt": "https://www.youtube.com/watch?v=ttEMYvpoR-k"},
+ {"id": "timeafter", "t": "Time After Time", "a": "Cyndi Lauper", "y": 1984, "key": "C", "c": ["Am", "C", "D", "Dm", "Em", "F", "G"], "strum": "D - D U - U D -", "bpm": 130, "src": "https://ukutabs.com/c/cyndi-lauper/time-after-time/", "yt": "https://www.youtube.com/watch?v=VdQY7BusJNU"},
+ {"id": "boyssummer", "t": "The Boys Of Summer", "a": "Don Henley", "y": 1984, "key": "Em", "c": ["Em", "C", "D", "G", "A"], "strum": "D - D - D U D U", "bpm": 176, "src": "https://ukutabs.com/d/don-henley/the-boys-of-summer/", "yt": "https://www.youtube.com/watch?v=6RUIeX6UCT8"},
+ {"id": "gogo", "t": "Wake Me Up Before You Go-Go", "a": "Wham!", "y": 1984, "key": "C", "c": ["C", "D", "Dm", "Em", "F", "G"], "strum": "D - D U D U D U", "bpm": 168, "src": "https://ukutabs.com/w/wham/wake-go-go/", "yt": "https://www.youtube.com/watch?v=pIgZ7gMze7A"},
+ {"id": "linger", "t": "Linger", "a": "The Cranberries", "y": 1993, "key": "D", "c": ["D", "A", "C", "G"], "strum": "D - D U - U D -", "bpm": 90, "src": "https://ukutabs.com/t/the-cranberries/linger/", "yt": "https://www.youtube.com/watch?v=G6Kspj3OO0s"},
+ {"id": "rainbow", "t": "Over The Rainbow", "a": "Israel Kamakawiwoʻole", "y": 1993, "key": "C", "c": ["C", "G", "Am", "F", "Em", "E7"], "strum": "D - D U - U D U", "bpm": 80, "src": "https://ukutabs.com/i/israel-kamakawiwoole/over-the-rainbow/", "yt": "https://www.youtube.com/watch?v=w_DKWlrA24k"},
+ {"id": "zombie", "t": "Zombie", "a": "The Cranberries", "y": 1994, "key": "Em", "c": ["C", "D", "Em", "G"], "strum": "D - D - D U D U", "bpm": 84, "src": "https://ukutabs.com/t/the-cranberries/zombie/", "yt": "https://www.youtube.com/watch?v=6Ejga4kJUts"},
+ {"id": "goodriddance", "t": "Good Riddance (Time Of Your Life)", "a": "Green Day", "y": 1997, "key": "G", "c": ["C", "D", "Em", "G"], "strum": "D U D U D U D U", "bpm": 94, "src": "https://ukutabs.com/g/green-day/good-riddance-time-of-your-life/", "yt": "https://www.youtube.com/watch?v=CnQ8N1KacJc"},
+ {"id": "heartgoon", "t": "My Heart Will Go On", "a": "Céline Dion", "y": 1997, "key": "G", "c": ["G", "D", "C", "Em"], "strum": "D - D U - U D -", "bpm": 100, "src": "https://ukutabs.com/c/celine-dion/my-heart-will-go-on/", "yt": "https://www.youtube.com/watch?v=44vf1Sv6XD0"},
+ {"id": "allstar", "t": "All Star", "a": "Smash Mouth", "y": 1999, "key": "G", "c": ["G", "D", "Am", "C", "F"], "strum": "D U D U D U D U", "bpm": 104, "src": "https://ukutabs.com/s/smash-mouth/all-star/", "yt": "https://www.youtube.com/watch?v=L_jWHffIx5E"},
+ {"id": "learnfly", "t": "Learning To Fly", "a": "Tom Petty and the Heartbreakers", "y": 1991, "key": "C", "c": ["F", "C", "Am", "G"], "strum": "D - D U - U D U", "bpm": 120, "src": "https://ukutabs.com/t/tom-petty/learning-to-fly-and-the-heartbreakers/"},
+ {"id": "friday", "t": "Friday I'm In Love", "a": "The Cure", "y": 1992, "key": "C", "c": ["Am", "C", "F", "G"], "strum": "D - D U D U D U", "bpm": 138, "src": "https://ukutabs.com/t/the-cure/friday-im-in-love/"},
+ {"id": "mrjones", "t": "Mr. Jones", "a": "Counting Crows", "y": 1993, "key": "Am", "c": ["Am", "C", "Dm", "F", "G"], "strum": "D U D U D U D U", "bpm": 140, "src": "https://ukutabs.com/c/counting-crows/mr-jones/", "yt": "https://music.youtube.com/watch?v=-oqAU5VxFWs"},
+ {"id": "tiffany", "t": "Breakfast At Tiffany's", "a": "Deep Blue Something", "y": 1995, "key": "D", "c": ["D", "G", "A"], "strum": "D U D U D U D U", "bpm": 132, "src": "https://ukutabs.com/d/deep-blue-something/breakfast-at-tiffanys/", "yt": "https://www.youtube.com/watch?v=1ClCpfeIELw"},
+ {"id": "religion", "t": "Losing My Religion", "a": "R.E.M.", "y": 1991, "key": "Am", "c": ["Am", "C", "D", "Dm", "Em", "F", "G"], "strum": "D U D U D U D U", "bpm": 124, "src": "https://ukutabs.com/r/rem/losing-my-religion/", "yt": "https://www.youtube.com/watch?v=xwtdhWltSIg"},
+ {"id": "madworld", "t": "Mad World", "a": "Gary Jules", "y": 2001, "key": "D", "c": ["Em", "A", "G", "D"], "strum": "D - - -", "bpm": 88, "src": "https://ukutabs.com/g/gary-jules/mad-world/", "yt": "https://www.youtube.com/watch?v=_iLdL1maN6I"},
+ {"id": "island", "t": "Island In The Sun", "a": "Weezer", "y": 2001, "key": "Em", "c": ["Em", "Am", "D", "G", "C"], "strum": "D - D U - U D U", "bpm": 116, "src": "https://ukutabs.com/w/weezer/island-in-the-sun/", "yt": "https://www.youtube.com/watch?v=erG5rgNYSdk"},
+ {"id": "believer", "t": "I'm A Believer", "a": "Smash Mouth", "y": 2001, "key": "C", "c": ["C", "D", "F", "G", "G7"], "strum": "D - D U D U D U", "bpm": 160, "src": "https://ukutabs.com/s/smash-mouth/im-a-believer/", "yt": "https://www.youtube.com/watch?v=OliNo_BFTIM"},
+ {"id": "skinny", "t": "Skinny Love", "a": "Bon Iver", "y": 2008, "key": "Am", "c": ["Am", "C", "G", "F"], "strum": "D - D - D U D U", "bpm": 150, "src": "https://ukutabs.com/b/bon-iver/skinny-love/", "yt": "https://www.youtube.com/watch?v=Daz-_OLM-is"},
+ {"id": "theshow", "t": "The Show", "a": "Lenka", "y": 2008, "key": "C", "c": ["C", "G", "Am", "F"], "strum": "D - D U - U D U", "bpm": 120, "src": "https://ukutabs.com/l/lenka/the-show/", "yt": "https://www.youtube.com/watch?v=UW8gb91ovw4"},
+ {"id": "belongwithme", "t": "You Belong With Me", "a": "Taylor Swift", "y": 2008, "key": "G", "c": ["G", "D", "Am", "C"], "strum": "D - D - D U D U", "bpm": 130, "src": "https://ukutabs.com/t/taylor-swift/you-belong-with-me/", "yt": "https://www.youtube.com/watch?v=309g7plQ7JI"},
+ {"id": "accidentally", "t": "Accidentally In Love", "a": "Counting Crows", "y": 2004, "key": "G", "c": ["G", "C", "D", "Em", "A", "Am"], "strum": "D - D U D U D U", "bpm": 110, "src": "https://ukutabs.com/c/counting-crows/accidentally-in-love/", "yt": "https://www.youtube.com/watch?v=Yn8CZyqfex8"},
+ {"id": "savealife", "t": "How To Save A Life", "a": "The Fray", "y": 2005, "key": "G", "c": ["C", "D", "Em", "G"], "strum": "D - D - D U D U", "bpm": 122, "src": "https://ukutabs.com/t/the-fray/how-to-save-a-life/", "yt": "https://www.youtube.com/watch?v=cjVQ36NhbMk"},
+ {"id": "sins", "t": "I Write Sins Not Tragedies", "a": "Panic! at the Disco", "y": 2006, "key": "Am", "c": ["Am", "Dm", "F", "G"], "strum": "D U D U D U D U", "bpm": 150, "src": "https://ukutabs.com/p/panic-at-the-disco/i-write-sins-not-tragedies/", "yt": "https://www.youtube.com/watch?v=vc6vs-l5dkc"},
+ {"id": "fireflies", "t": "Fireflies", "a": "Owl City", "y": 2009, "key": "C", "c": ["G", "C", "F", "Em", "Am"], "strum": "D U D U D U D U", "bpm": 90, "src": "https://ukutabs.com/o/owl-city/fireflies/", "yt": "https://www.youtube.com/watch?v=psuRGfAaju4"},
+ {"id": "khonkwai", "t": "คนกับควาย", "a": "คาราวาน", "y": 1975, "c": ["Am", "Dm"], "strum": "D D D D", "strumTip": true, "bpm": null, "th": true, "src": "https://chordzaa.com/easy-chord/6624/", "yt": "https://www.youtube.com/watch?v=B5PmQWQzABU"},
+ {"id": "lungkhimao", "t": "ลุงขี้เมา", "a": "คาราบาว", "y": 1981, "c": ["Am", "G", "F", "E7", "C", "Dm"], "strum": "D D D D", "strumTip": true, "bpm": null, "th": true, "src": "https://chordzaa.com/easy-chord/287/", "yt": "https://www.youtube.com/watch?v=IHvzsDAZCzc"},
+ {"id": "monphleng", "t": "มนต์เพลงคาราบาว", "a": "คาราบาว", "y": 1981, "c": ["Am", "G", "F", "E7", "Dm"], "strum": "D D D D", "strumTip": true, "bpm": null, "th": true, "src": "https://chordzaa.com/easy-chord/2015/", "yt": "https://www.youtube.com/watch?v=cQIhmoFEoAQ"},
+ {"id": "saochiangmai", "t": "สาวเชียงใหม่", "a": "จรัล มโนเพ็ชร และ สุนทรี เวชานนท์", "y": 1982, "c": ["C", "Am", "Dm", "G", "Em"], "strum": "D D D D", "strumTip": true, "bpm": null, "th": true, "src": "https://chordzaa.com/easy-chord/504/", "yt": "https://www.youtube.com/watch?v=G3CxwUpFL3A", "note": "แผ่นคอร์ดต้นทางใช้คาโป้ช่อง 2 ถ้าดีดตามคลิปแล้วเสียงต่ำกว่า ให้ร้องตามคีย์ที่สบายได้เลย"},
+ {"id": "nangngam", "t": "นางงามตู้กระจก", "a": "คาราบาว", "y": 1984, "c": ["G", "C", "F", "Am"], "strum": "D D D D", "strumTip": true, "bpm": null, "th": true, "src": "https://chordzaa.com/easy-chord/64/", "yt": "https://www.youtube.com/watch?v=GrirnysEorA"},
+ {"id": "krathang", "t": "กระถางดอกไม้ให้คุณ", "a": "คาราบาว", "y": 1987, "c": ["G", "Am", "D", "Em"], "strum": "D D D D", "strumTip": true, "bpm": null, "th": true, "src": "https://www.dochord.com/86807/", "yt": "https://www.youtube.com/watch?v=sqDHQpVO_0Y"},
+ {"id": "nangniao", "t": "คนหนังเหนียว", "a": "คาราบาว", "y": 1987, "c": ["Am", "C", "F", "G"], "strum": "D D D D", "strumTip": true, "bpm": null, "th": true, "src": "https://chordzaa.com/easy-chord/584/", "yt": "https://www.youtube.com/watch?v=bsAtgIKJPSs"},
+ {"id": "thaithoe", "t": "ไถ่เธอคืนมา", "a": "พงษ์สิทธิ์ คำภีร์", "y": 1992, "c": ["G", "D", "Em", "C", "G7", "Am"], "strum": "D D D D", "strumTip": true, "bpm": null, "th": true, "src": "https://chordzaa.com/easy-chord/27/", "yt": "https://www.youtube.com/watch?v=S4N4WgSuiwo"},
+ {"id": "raengkhoi", "t": "แร้งคอย", "a": "คาราบาว", "y": 1993, "c": ["D", "G", "Em", "C"], "strum": "D D D D", "strumTip": true, "bpm": null, "th": true, "src": "https://chordzaa.com/easy-chord/289/", "yt": "https://www.youtube.com/watch?v=nhUit3BsPNc"},
+ {"id": "rakdiao", "t": "รักเดียว", "a": "พงษ์สิทธิ์ คำภีร์", "y": 2001, "c": ["G", "D", "C", "Em"], "strum": "D D D D", "strumTip": true, "bpm": null, "th": true, "src": "https://chordzaa.com/easy-chord/44/", "yt": "https://www.youtube.com/watch?v=CCcvUNmFx4I", "note": "ลิงก์ตัวอย่างเป็นคลิปการแสดงสด"},
+ {"id": "phitthi", "t": "ผิดที่ไว้ใจ", "a": "Silly Fools", "y": 2002, "c": ["Am", "F", "C", "G", "Dm"], "strum": "D D D D", "strumTip": true, "bpm": null, "th": true, "src": "https://chordzaa.com/easy-chord/290/", "yt": "https://www.youtube.com/watch?v=28WDBvqSjc8", "note": "แผ่นคอร์ดต้นทางใช้คาโป้ช่อง 1 เสียงจะต่างจากต้นฉบับครึ่งเสียง"},
+ {"id": "dokya", "t": "ดอกหญ้าในป่าปูน", "a": "ต่าย อรทัย", "y": 2002, "c": ["Am", "C", "Dm", "G", "Em"], "strum": "D D D D", "strumTip": true, "bpm": null, "th": true, "src": "https://www.dochord.com/96125/", "yt": "https://www.youtube.com/watch?v=kGHBFvG5R1Q"},
+ {"id": "maiaothan", "t": "คนไม่เอาถ่าน", "a": "Big Ass", "y": 2004, "c": ["C", "F", "Dm", "G", "Em", "Am"], "strum": "D D D D", "strumTip": true, "bpm": null, "th": true, "src": "https://chordzaa.com/easy-chord/331/", "yt": "https://www.youtube.com/watch?v=TNbSP0VfFWQ", "note": "ต้นฉบับตั้งสายต่ำลงครึ่งเสียง เสียงจะต่างจากคลิปเล็กน้อย"},
+ {"id": "thamdai", "t": "ทำได้เพียง", "a": "25hours", "y": 2009, "c": ["D", "A", "Em", "G", "C"], "strum": "D D D D", "strumTip": true, "bpm": null, "th": true, "src": "https://chordzaa.com/easy-chord/238/", "yt": "https://www.youtube.com/watch?v=MwzbQT0CA1Y"},
+];
+SONGS.forEach(s=>{s.level=(s.c.length<=4&&(s.bpm||0)<=100)?1:2;s.dec=s.th?'th':s.pd?'pd':s.y<1970?'60':s.y<1980?'70':s.y<1990?'80':s.y<2000?'90':'00';});
+const DECADES=[['th','เพลงไทย','เพลงไทยย้อนยุค ปี 2518–2552 ใช้คอร์ดง่ายชุดเดียวกับเพลงสากล'],['pd','เพลงพื้นบ้าน','พ้นลิขสิทธิ์แล้ว มีเนื้อเพลงพร้อมคอร์ดให้ดีดตามได้เลย'],['60','ยุค 50s–60s','คลาสสิกก่อนยุค 70'],['70','ยุค 70s',''],['80','ยุค 80s',''],['90','ยุค 90s',''],['00','ยุค 2000s','']];
+
+/* ================= STATE ================= */
+const KEY='ukegle.v1';
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
+let S=Object.assign({onboarded:false,known:[],hasUke:true,exp:'none',lyric:20,songFilter:'all',chordFilter:'all'},load());
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+let view={name:S.onboarded?'home':'ob',step:0,song:null,stand:false};
+const obTmp={tuned:[true,true,false,false]};
+
+const known=c=>S.known.includes(c);
+const playable=s=>s.c.every(known);
+const missing=s=>s.c.filter(c=>!known(c));
+function stageState(i){const st=STAGES[i]; if(st.c.every(known)) return 'done'; const first=STAGES.findIndex(x=>!x.c.every(known)); return i===first?'now':'lock';}
+function songsUnlockedBy(i){const before=new Set(STAGES.slice(0,i+1).flatMap(s=>s.c)); const prev=new Set(STAGES.slice(0,i).flatMap(s=>s.c));
+ return SONGS.filter(s=>s.c.every(c=>before.has(c)) && !s.c.every(c=>prev.has(c)));}
+
+/* ================= AUDIO (plucked-string synth) ================= */
+let AC=null;
+function pluck(freq,when){const sr=AC.sampleRate,dur=2.2,len=Math.floor(sr*dur),N=Math.max(2,Math.round(sr/freq));
+ const buf=AC.createBuffer(1,len,sr),d=buf.getChannelData(0),ring=new Float32Array(N);
+ for(let i=0;i<N;i++)ring[i]=Math.random()*2-1;
+ for(let i=0;i<len;i++){const a=i%N,b=(i+1)%N; d[i]=ring[a]; ring[a]=0.4985*(ring[a]+ring[b]);}
+ const src=AC.createBufferSource(); src.buffer=buf; const g=AC.createGain(); g.gain.value=0.22;
+ const lp=AC.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=3200;
+ src.connect(lp).connect(g).connect(AC.destination); src.start(when);}
+function playChord(name){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)(); if(AC.state==='suspended')AC.resume();
+ const base=[392,261.63,329.63,440]; const t=AC.currentTime+0.02;
+ CHORDS[name].frets.forEach((f,i)=>pluck(base[i]*Math.pow(2,f/12),t+i*0.035));}catch(e){toast('เล่นเสียงไม่ได้ในเบราว์เซอร์นี้');}}
+
+/* ================= UI HELPERS ================= */
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const $=s=>document.querySelector(s);
+const ICON={
+ home:'<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" fill="none"/>',
+ chords:'<rect x="5" y="3" width="14" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M9 3v18M15 3v18M5 9h14M5 15h14" stroke="currentColor" stroke-width="1.5"/>',
+ songs:'<path d="M9 18V5l12-2v13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="6" cy="18" r="3" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="18" cy="16" r="3" stroke="currentColor" stroke-width="2" fill="none"/>',
+ tune:'<path d="M4 18a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M12 18l4-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="18" r="1.5" fill="currentColor"/>',
+ buy:'<path d="M6 7h12l-1 13H7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" fill="none"/><path d="M9 7a3 3 0 0 1 6 0" stroke="currentColor" stroke-width="2" fill="none"/>',
+ back:'<path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+ play:'<path d="M8 5v14l11-7z" fill="currentColor"/>', pause:'<path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/>',
+ stand:'<rect x="3" y="7" width="18" height="10" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M8 4h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+ sound:'<path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/>',
+ check:'<path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+ lock:'<rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="2" fill="none"/>',
+ down:'<path d="M12 4v15M6 13l6 6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+ up:'<path d="M12 20V5M6 11l6-6 6 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+ chev:'<path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+ yt:'<circle cx="12" cy="12" r="11" fill="#FF6B4A"/><path d="M10 8v8l6-4z" fill="#fff"/>',
+};
+const ic=(n,s=24)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true">${ICON[n]}</svg>`;
+function diagram(name,w=100){const ch=CHORDS[name],SX=[14,38,62,86],NUT=10,FR=28,h=NUT+FR*4+4;
+ let s=`<svg class="diagram" width="${w}" height="${w*h/100}" viewBox="0 0 100 ${h}" role="img" aria-label="แผนภาพคอร์ด ${name}">`;
+ s+=`<rect x="4" y="${NUT}" width="92" height="${FR*4}" rx="4" fill="var(--wood)"/><rect x="4" y="${NUT-6}" width="92" height="6" rx="2" fill="var(--nut)"/>`;
+ for(let i=1;i<=4;i++)s+=`<rect x="4" y="${NUT+FR*i-1}" width="92" height="2" fill="var(--fret)"/>`;
+ SX.forEach((x,i)=>s+=`<rect x="${x-1}" y="${NUT}" width="${i?2:1.5}" height="${FR*4}" fill="var(--fret)"/>`);
+ ch.dots.forEach(([si,f,fg])=>{const cy=NUT+FR*(f-0.5);s+=`<circle cx="${SX[si]}" cy="${cy}" r="11" fill="var(--f${fg})"/><text x="${SX[si]}" y="${cy+4.5}" text-anchor="middle" font-size="13" font-weight="600" fill="#fff" font-family="Kanit, sans-serif">${fg}</text>`;});
+ return s+'</svg>';}
+function chordCard(name,{btn=true,size=100,badge=true}={}){const n=nFing(name);
+ const inner=`<span class="nm">${name}</span>${diagram(name,size)}<span class="cap muted" style="letter-spacing:.2em">G C E A</span>${badge?`<span class="badge lv${Math.min(n,3)}">${known(name)?'✓ ทำได้แล้ว':n?`ใช้ ${n} นิ้ว`:'ไม่ใช้นิ้วเลย'}</span>`:''}`;
+ return btn?`<button class="chord-card${known(name)?' known':''}" data-chord="${name}" aria-label="คอร์ด ${name} แตะเพื่อดูวิธีจับ">${inner}</button>`:`<div class="chord-card">${inner}</div>`;}
+function strumHTML(p){return `<div class="beats">${p.split(' ').map((t,i)=>`<div class="beat" style="color:${t==='-'?'var(--line)':t==='U'?'var(--sec)':'var(--pri)'}">${t==='-'?`<svg width="28" height="28" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>`:ic(t==='U'?'up':'down',28)}<small>${t==='-'?'เว้น':t==='U'?'ขึ้น':'ลง'}</small></div>`).join('')}</div>`;}
+const strumText=p=>p.split(' ').map(t=>t==='-'?'–':t==='U'?'ขึ้น':'ลง').join(' ');
+function songItem(s){const ok=playable(s),m=missing(s);
+ return `<div class="card song"><button class="song-top" data-song="${s.id}" style="background:none;border:0;padding:0;text-align:left;width:100%">
+  <span class="cover${ok?' ok':''}">${ok?ic('check',22):ic('songs',22)}</span>
+  <span style="flex:1;min-width:0"><span class="song-title" style="display:block">${esc(s.t)}</span><span class="cap muted">${esc(s.a)}${s.y?' · '+s.y:''}</span></span>
+  <span class="stack" style="gap:2px;align-items:flex-end"><span class="badge ${s.c.length>4?'lv2':'lv1'}">${s.c.length} คอร์ด</span><span class="cap muted" style="font-size:12px">ระดับ ${s.level}</span></span></button>
+  <span class="song-chords">คอร์ด: ${s.c.join(' · ')}</span>
+  <span class="cap muted">วิธีดีด${s.meter?' ('+s.meter+')':''}${s.strumTip?' (แนะนำสำหรับมือใหม่)':''}: ${strumText(s.strum)}${s.bpm?` · ~${s.bpm} bpm`:''}</span>
+  ${ok?'<span class="cap" style="color:var(--ok);font-weight:500">เล่นได้แล้ว คอร์ดครบ</span>':`<span class="cap muted">ยังขาด ${m.join(', ')}</span>`}
+  ${s.yt?`<a class="listen" href="${s.yt}" target="_blank" rel="noopener">${ic('yt',18)} ฟังตัวอย่างบน YouTube</a>`:s.pd?'':'<span class="cap muted">ยังไม่มีลิงก์ตัวอย่างจากช่องทางการ</span>'}
+ </div>`;}
+function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),1800);}
+
+/* ================= VIEWS ================= */
+function vHome(){const k=S.known.length,ci=STAGES.findIndex((_,i)=>stageState(i)==='now'),st=STAGES[ci];
+ const can=SONGS.filter(playable),near=SONGS.filter(s=>missing(s).length===1);
+ const nextUnlock=ci>=0?songsUnlockedBy(ci):[];
+ return `<header class="stack" style="gap:4px"><div class="brand">UkeGle</div><p class="muted">เล่นได้ตั้งแต่วันแรก ไม่ต้องเก่งก่อน</p></header>
+ ${st?`<section class="card soft" style="padding:24px;gap:12px;border-radius:var(--r-lg)"><span class="eyebrow" style="color:var(--pri-text)">ด่าน ${ci+1} จาก ${STAGES.length}</span><h2>ด่านถัดไป: ${st.c.join(' และ ')}</h2>
+   <p>${nextUnlock.length?`ผ่านด่านนี้แล้วปลดล็อกได้อีก ${nextUnlock.length} เพลง เช่น ${esc(nextUnlock[0].t)}`:esc(st.note||'')}</p>
+   <div><button class="btn" data-go="path">ฝึกต่อ</button></div></section>`
+ :`<section class="card soft" style="padding:24px;gap:8px"><h2>ผ่านครบทุกด่านแล้ว!</h2><p>ทำได้ครบ 13 คอร์ด เลือกเพลงในคลังเพลงได้ทุกเพลง</p></section>`}
+ <section class="card"><div class="row" style="justify-content:space-between"><span style="font-weight:500">คอร์ดที่ทำได้แล้ว</span><span style="font-family:var(--display);font-weight:600;font-size:20px;color:var(--sec-text)">${k} / 13</span></div>
+  <div class="track"><i style="width:${k/13*100}%"></i></div><button class="cap muted" data-go="path" style="background:none;border:0;padding:0;text-align:left">ดูเส้นทางการเรียนทั้งหมด ›</button></section>
+ <section class="stack"><h2>เพลงที่เล่นได้แล้ว</h2>${can.length?can.map(songItem).join(''):`<div class="placeholder"><b>ยังไม่มีเพลงที่คอร์ดครบ</b><span class="cap muted">ฝึกด่าน 1–2 ให้ผ่าน แล้วจะเล่น ${songsUnlockedBy(1).slice(0,2).map(x=>esc(x.t)).join(' กับ ')} ได้</span></div>`}</section>
+ ${near.length?`<section class="stack"><h2>อีกคอร์ดเดียวก็เล่นได้</h2>${near.slice(0,4).map(songItem).join('')}</section>`:''}
+ <section class="card"><span class="cap muted">ความคืบหน้าบันทึกไว้ในเบราว์เซอร์เครื่องนี้เท่านั้น</span><div class="row"><button class="btn ghost small" data-act="reset">เริ่มใหม่ทั้งหมด</button></div></section>`;}
+
+function vChords(){const f=S.chordFilter;const groups=[['ไม่ใช้นิ้ว – ใช้นิ้วเดียว',c=>nFing(c)<=1],['ใช้ 2 นิ้ว',c=>nFing(c)===2],['ใช้ 3 นิ้ว',c=>nFing(c)===3]];
+ const show=i=>f==='all'||f===String(i);
+ return `<header class="stack" style="gap:4px"><h1>คลังคอร์ด</h1><p class="muted">เรียงจากง่ายที่สุด แตะคอร์ดเพื่อดูวิธีจับและฟังเสียง</p></header>
+ <div class="row" role="group" aria-label="กรองตามจำนวนนิ้ว">${[['all','ทั้งหมด'],['0','0–1 นิ้ว'],['1','2 นิ้ว'],['2','3 นิ้ว']].map(([v,l])=>`<button class="chip" aria-pressed="${f===v}" data-cf="${v}">${l}</button>`).join('')}</div>
+ <div class="card legend">${[1,2,3,4].map(n=>`<span><i class="dot" style="background:var(--f${n})"></i>${n} ${FINGER[n].replace('นิ้ว','')}</span>`).join('')}</div>
+ ${groups.map(([t,fn],i)=>show(i)?`<section class="stack"><h2>${t}</h2><div class="chord-grid">${CHORD_ORDER.filter(fn).map(c=>chordCard(c)).join('')}</div></section>`:'').join('')}`;}
+
+function vSongs(){const f=S.songFilter;
+ const sorted=l=>l.slice().sort((a,b)=>a.level-b.level||a.c.length-b.c.length||a.bpm-b.bpm);
+ let list=SONGS; if(f==='can')list=SONGS.filter(playable); else if(f==='1'||f==='2')list=SONGS.filter(s=>String(s.level)===f); else if(f!=='all')list=SONGS.filter(s=>s.dec===f);
+ const chips=[['all','ทั้งหมด'],['can','เล่นได้แล้ว'],['1','ระดับ 1'],['2','ระดับ 2'],...DECADES.map(([k,l])=>[k,l])];
+ const sec=([k,t,sub])=>{const l=sorted(SONGS.filter(s=>s.dec===k));return l.length?`<section class="stack"><h2>${t} <span class="cap muted" style="font-family:var(--body);font-weight:400">${l.length} เพลง</span></h2>${sub?`<p class="cap muted">${sub}</p>`:''}${l.map(songItem).join('')}</section>`:'';};
+ return `<header class="stack" style="gap:4px"><h1>คลังเพลง</h1><p class="muted">${SONGS.length} เพลงย้อนยุค ไทยและสากล ใช้แค่คอร์ดในคลังคอร์ด แตะชื่อเพลงเพื่อเปิดแผ่นเพลง</p></header>
+ <div class="row">${chips.map(([v,l])=>`<button class="chip" aria-pressed="${f===v}" data-sf="${v}">${l}</button>`).join('')}</div>
+ <p class="cap muted">ระดับ 1 คือไม่เกิน 4 คอร์ดและจังหวะไม่เร็ว เหมาะเป็นเพลงแรก ระดับ 2 คอร์ดมากขึ้นหรือจังหวะเร็ว</p>
+ ${f==='all'?DECADES.map(sec).join('')
+  :list.length?`<section class="stack">${sorted(list).map(songItem).join('')}</section>`:'<div class="placeholder"><b>ยังไม่มีเพลงในหมวดนี้</b><span class="cap muted">ฝึกคอร์ดในเส้นทางการเรียนเพิ่ม แล้วเพลงจะมาอยู่ที่นี่</span></div>'}
+ <p class="cap muted">ข้อมูลคอร์ด วิธีดีด และความเร็วของเพลงที่มีลิขสิทธิ์ อ้างอิงแผ่นคอร์ดจาก UkuTabs (เพลงสากล) และ Chordzaa กับ Dochord (เพลงไทย) ปีที่ระบุคือปีที่เพลงเวอร์ชันนั้นออก</p>`;}
+
+function vSheet(){const s=SONGS.find(x=>x.id===view.song);
+ const lyr=s.lyrics?s.lyrics.map(([sec,lines])=>`<div class="sec">${esc(sec)}</div>`+lines.map(l=>{const parts=l.split(/\[([^\]]+)\]/);let out=[];if(parts[0])out.push(['',parts[0]]);for(let i=1;i<parts.length;i+=2)out.push([parts[i],parts[i+1]||'']);
+   return `<div class="line">${out.map(([c,w])=>`<span class="chunk"><span class="c">${c?esc(c):'&nbsp;'}</span><span class="w">${esc(w.trim()||' ')}</span></span>`).join('')}</div>`;}).join('')).join('')
+  :`<div class="placeholder"><b>เนื้อเพลงจะเพิ่มเมื่อได้รับอนุญาตจากผู้ถือลิขสิทธิ์</b><span class="cap muted">ระหว่างนี้ฟังเพลงต้นฉบับ แล้วดีดคอร์ด ${s.c.join(' · ')} ตามวิธีดีดด้านบน</span>${s.yt?`<a class="listen" href="${s.yt}" target="_blank" rel="noopener">${ic('yt',18)} ฟังตัวอย่างบน YouTube</a>`:''}${s.src?`<a class="cap muted" href="${s.src}" target="_blank" rel="noopener">ดูแผ่นคอร์ดต้นทาง ›</a>`:''}</div>`;
+ return `<div class="sheet-head"><button class="iconbtn" data-go="songs" aria-label="กลับไปคลังเพลง">${ic('back')}</button>
+  <div style="flex:1;min-width:0"><h2>${esc(s.t)}</h2><p class="cap muted">${esc(s.a)}${s.y?' · '+s.y:''}${s.key?' · คีย์ '+s.key:''} · ${s.c.length} คอร์ด${s.pd?' · พ้นลิขสิทธิ์':''}</p></div>
+  <button class="iconbtn" data-act="stand" aria-pressed="${view.stand}" aria-label="${view.stand?'ออกจากโหมดวางขาตั้ง':'โหมดวางขาตั้ง ตัวอักษรใหญ่'}">${ic('stand')}</button></div>
+ <div class="stand-grid"><div class="sheet-chords">${s.c.map(c=>`<button class="chord-card" data-play="${c}" aria-label="ฟังเสียงคอร์ด ${c}"><span class="nm" style="font-size:17px">${c}</span>${diagram(c,view.stand?90:64)}</button>`).join('')}</div>
+ <div class="stack" style="gap:20px;min-width:0">
+  <section class="card"><b>วิธีดีด${s.meter?` (จังหวะ ${s.meter})`:''}: ${strumText(s.strum)}</b>${strumHTML(s.strum)}<p class="cap muted">${s.strumTip?'แผ่นคอร์ดต้นทางไม่ได้ระบุวิธีดีด แอปแนะนำให้ตีลงตามจังหวะเพลงก่อน คล่องแล้วค่อยเพิ่มตีขึ้น':`ประมาณ ${s.bpm} ครั้งต่อนาที`} ${s.lyrics?'· ชื่อคอร์ดสีส้มอยู่เหนือคำไหน ให้เปลี่ยนคอร์ดตรงคำนั้น':''} · แตะแผนภาพคอร์ดเพื่อฟังเสียง</p></section>
+  ${s.note?`<p class="cap" style="background:var(--l2);padding:10px 14px;border-radius:12px">${esc(s.note)}</p>`:''}<section class="lyrics" style="--lyric:${S.lyric}px">${lyr}</section>
+  ${s.yt&&s.lyrics?`<a class="listen" href="${s.yt}" target="_blank" rel="noopener">${ic('yt',18)} ฟังตัวอย่างบน YouTube</a>`:''}
+ </div></div>`;}
+function dockHTML(){const sp=['ช้า','กลาง','เร็ว'][scroll.speed],fz={18:'เล็ก',20:'กลาง',24:'ใหญ่',28:'ใหญ่มาก'}[S.lyric]||'กลาง';
+ return `<div class="dock"><div class="in"><button class="play" data-act="auto" aria-label="${scroll.on?'หยุดเลื่อน':'เริ่มเลื่อนอัตโนมัติ'}">${ic(scroll.on?'pause':'play')}</button>
+  <div class="stepper"><small>เลื่อนอัตโนมัติ</small><div class="row"><button data-act="spd-" aria-label="ช้าลง">−</button><b>${sp}</b><button data-act="spd+" aria-label="เร็วขึ้น">+</button></div></div>
+  <div class="stepper"><small>ขนาดตัวอักษร</small><div class="row"><button data-act="fz-" aria-label="ตัวเล็กลง">−</button><b>${fz}</b><button data-act="fz+" aria-label="ตัวใหญ่ขึ้น">+</button></div></div></div></div>`;}
+
+function vTune(){const rd=(pos,label,ok)=>`<div class="readout"><b style="color:${ok?'#4ADE80':'#fff'}">A</b><svg width="72" height="14" viewBox="0 0 72 14">${[...Array(9)].map((_,i)=>`<rect x="${i*9-0.75}" y="${i===4?2:4.5}" width="1.5" height="${i===4?10:5}" fill="${i===4?'#4ADE80':'#7A6A5C'}"/>`).join('')}<rect x="${36+pos*24-1.5}" y="0" width="3" height="14" rx="1.5" fill="${ok?'#4ADE80':'#FF6B4A'}"/></svg><small>${label}</small></div>`;
+ return `<header class="stack" style="gap:4px"><h1>ตั้งสาย</h1><p class="muted">ใช้เครื่องตั้งสายแบบหนีบ ไม่ต้องฟังเสียงเอง</p></header>
+ <section class="card"><b>อ่านจอเครื่องตั้งสายแบบนี้</b><p class="cap muted">ภาพตัวอย่างหน้าจอเครื่องตั้งสายแบบหนีบ แอปไม่ได้ฟังเสียงหรือตั้งสายให้</p>
+  <div class="readouts">${rd(-1,'ต่ำไป<br>บิดให้ตึงขึ้น',false)}${rd(0,'ตรงแล้ว<br>เข็มกลาง จอเขียว',true)}${rd(1,'สูงไป<br>บิดให้หย่อนลง',false)}</div></section>
+ <section class="card"><b>ดีดทีละสาย จอต้องขึ้นตัวนี้</b>${['G','C','E','A'].map((n,i)=>`<div class="string-row"><span class="note" style="background:var(--f${i+1})">${n}</span><span>${['สายบนสุด','สายที่สอง','สายที่สาม','สายล่างสุด'][i]}</span></div>`).join('')}<p class="cap muted">นับสายขณะถืออูคูในท่าเล่น สายบนสุดคือสายที่อยู่ใกล้หน้าที่สุด</p></section>
+ <section class="stack">${['หนีบเครื่องตั้งสายไว้ที่หัวอูคูเลเล แล้วเปิดเครื่อง (ถ้ามีปุ่มโหมด ให้เลือก C หรือ U)','ดีดทีละสาย ดูตัวอักษรบนจอ สายบนสุดต้องขึ้น G แล้วไล่ลงมาเป็น C, E, A','บิดลูกบิดทีละนิด จนตัวอักษรถูกและเข็มอยู่ตรงกลาง (หรือจอเป็นสีเขียว) แค่นี้ก็ตรงแล้ว'].map((t,i)=>`<div class="card" style="flex-direction:row;gap:16px;align-items:flex-start"><span class="num">${i+1}</span><p>${t}</p></div>`).join('')}</section>
+ <section class="card" style="background:var(--l2);border:0"><b>ขึ้นตัวอักษรผิด?</b><p class="cap">แปลว่ายังห่างอยู่ บิดต่อไปอีกนิดจนตัวอักษรถูกก่อน แล้วค่อยดูเข็ม เช่น ต้องการ A แต่ขึ้น G♯ แปลว่าสายยังต่ำไป</p></section>
+ <section class="card"><b>ข้อควรรู้</b><p class="cap">ทิศทางการบิดลูกบิดไม่เหมือนกันทุกรุ่น ให้บิดทีละน้อยแล้วดีดดูว่าเข็มขยับไปทางไหน และดีดแล้วรอให้เสียงนิ่งก่อนอ่านค่า เพราะเข็มจะแกว่งในจังหวะแรก</p></section>
+ <button class="card soft" data-go="buy" style="flex-direction:row;align-items:center;text-align:left"><span style="flex:1"><b style="display:block">ยังไม่มีเครื่องตั้งสาย?</b><span class="cap muted">หาซื้อแบบหนีบได้ตามร้านดนตรี ใช้กับอูคูเลเลได้ทุกขนาด</span></span><span style="color:var(--pri-text)">${ic('chev')}</span></button>`;}
+
+function vBuy(){return `<header class="stack" style="gap:4px"><h1>ซื้ออูคูตัวแรก</h1><p class="muted">เครื่องดี กดง่าย เสียงดี ช่วยให้ไม่ท้อตั้งแต่วันแรก</p></header>
+ <section class="card soft"><b>ทำไมไม่ควรซื้อถูกเกินไป</b><p class="cap">เครื่องที่ถูกมากมักตั้งเสียงไม่อยู่ หรือสายสูงจนกดเจ็บนิ้ว ทำให้ฝึกเท่าไรเสียงก็ไม่ดี เลือกระดับกลางขึ้นไปจากแบรนด์ที่ดูแลคุณภาพ แล้วให้ร้านปรับตั้งเครื่องก่อนรับ</p></section>
+ <section class="stack"><h2>เลือกขนาด</h2>${[['โซปราโน (Soprano)','เล็กที่สุด เหมาะกับเด็กเล็ก','เหมาะกับเด็ก',1],['คอนเสิร์ต (Concert)','คอกว้างขึ้นนิด เสียงเต็มขึ้น กดสบายมือ','แนะนำ',0],['เทเนอร์ (Tenor)','ใหญ่ขึ้น เหมาะกับคนมือใหญ่','ใช้ได้',2],['บาริโทน (Baritone)','ตั้งสายต่างจากแบบอื่น คอร์ดในแอปใช้ไม่ได้','ไม่แนะนำ',3]].map(([n,d,t,l])=>`<div class="card" style="flex-direction:row;align-items:center;gap:12px"><span style="flex:1;min-width:0"><b style="font-weight:500;display:block">${n}</b><span class="cap muted">${d}</span></span><span class="badge lv${l}">${t}</span></div>`).join('')}
+  <p class="cap muted">โซปราโน คอนเสิร์ต และเทเนอร์ ตั้งสาย G C E A เหมือนกัน ใช้คอร์ดในแอปได้ทั้งสามขนาด</p></section>
+ <section class="stack"><h2>แบรนด์ที่แนะนำ</h2>${[['ระดับกลาง — เหมาะกับเครื่องแรก',['Kala','Ohana','Cordoba','Lanikai'],1],['กลางค่อนสูง',['Pono','Famous / Kiwaya'],2],['ระดับสูง (K Brand ฮาวาย)',['Kamaka',"Kanile'a",'KoAloha',"Ko'olau"],3]].map(([t,l,c])=>`<div class="card"><b style="font-weight:500">${t}</b><div class="row">${l.map(b=>`<span class="badge lv${c}" style="font-size:14px;padding:4px 14px">${b}</span>`).join('')}</div></div>`).join('')}</section>
+ <section class="card soft"><b>ก่อนรับเครื่อง</b><ul style="margin:0;padding-left:1.2em" class="cap"><li>ลองกดคอร์ด C และ Am ที่ร้าน ต้องกดไม่เจ็บนิ้ว</li><li>ขอให้ร้านเช็กความสูงสายให้ก่อน</li><li>ไม่ต้องเป็นไม้แท้ก็ได้ ไม้อัดที่ทำดีก็พอสำหรับช่วงหัดเล่น</li><li>ซื้อเครื่องตั้งสายแบบหนีบติดมาด้วย (แอปไม่มีเครื่องตั้งสายในตัว)</li></ul></section>`;}
+
+function vPath(){const done=STAGES.filter((_,i)=>stageState(i)==='done').length,can=SONGS.filter(playable).length;
+ return `<div class="sheet-head"><button class="iconbtn" data-go="home" aria-label="กลับหน้าแรก">${ic('back')}</button><h1 style="flex:1">เส้นทางการเรียน</h1></div>
+ <p class="muted">ผ่านทีละด่าน ด่านละ 1–2 คอร์ด ทุกด่านปลดล็อกเพลงที่เล่นได้จริง</p>
+ <section class="card" style="flex-direction:row;justify-content:space-around;text-align:center">${[[`${done}/${STAGES.length}`,'ด่านที่ผ่าน'],[S.known.length,'คอร์ดที่ทำได้'],[can,'เพลงที่เล่นได้']].map(([n,l])=>`<div><div style="font-family:var(--display);font-weight:600;font-size:20px;color:var(--sec-text)">${n}</div><div class="cap muted">${l}</div></div>`).join('')}</section>
+ <div class="path">${STAGES.map((st,i)=>{const s=stageState(i),songs=songsUnlockedBy(i),last=i===STAGES.length-1;
+  return `<div class="stage ${s}"><div class="rail"><span class="node ${s}">${s==='done'?ic('check',20):s==='now'?i+1:ic('lock',18)}</span>${last?'':`<span class="ln ${s==='done'?'done':''}"></span>`}</div>
+  <div class="card"><span class="eyebrow" style="color:${s==='done'?'var(--ok)':s==='now'?'var(--pri-text)':'var(--muted)'}">ด่าน ${i+1} · ${s==='done'?'ผ่านแล้ว':s==='now'?'กำลังฝึก':'ล็อกอยู่'}</span>
+   <b style="font-weight:500">${st.t}</b>
+   <div class="row">${st.c.map(c=>`<span class="cpill">${c}</span>`).join('')}<span class="cap muted">คอร์ดใหม่</span></div>
+   <p class="cap">${songs.length?`ปลดล็อก ${songs.length} เพลง: ${songs.map(x=>esc(x.t)).join(', ')}`:esc(st.note||'')}</p>
+   ${s==='now'?`<div class="chord-grid" style="grid-template-columns:repeat(2,minmax(0,1fr))">${st.c.map(c=>chordCard(c)).join('')}</div><p class="cap muted">แตะคอร์ดเพื่อดูวิธีจับ ฟังเสียง แล้วกด "ทำได้แล้ว"</p>`:''}
+  </div></div>`;}).join('')}</div>`;}
+
+/* ---------- onboarding ---------- */
+function vOb(){const st=view.step,steps=n=>`<div class="steps" aria-label="ข้อ ${n} จาก 3">${[1,2,3].map(i=>`<i class="${i<=n?'on':''}"></i>`).join('')}</div><span class="cap muted">ข้อ ${n} จาก 3</span>`;
+ const opt=(k,v,e,t,s)=>`<button class="opt" role="radio" aria-checked="${S[k]===v}" data-opt="${k}:${v}"><span class="em" aria-hidden="true">${e}</span><span style="min-width:0"><b style="font-weight:500;display:block">${t}</b><span class="cap muted">${s}</span></span><span class="radio"></span></button>`;
+ if(st===0)return `<div class="ob splash"><div class="top" style="align-items:center"><svg width="112" height="112" viewBox="0 0 64 64" aria-hidden="true"><rect x="27" y="2" width="10" height="9" rx="2.5" fill="#fff"/><rect x="29.5" y="9" width="5" height="22" fill="#fff"/><ellipse cx="32" cy="35" rx="10" ry="9" fill="#fff"/><ellipse cx="32" cy="48" rx="13.5" ry="12" fill="#fff"/><circle cx="32" cy="41" r="4" fill="#FF6B4A"/><rect x="27" y="53" width="10" height="2.5" rx="1.25" fill="#FF6B4A"/></svg><div class="brand" style="color:#fff">UkeGle</div><p>เล่นได้ตั้งแต่วันแรก ไม่ต้องเก่งก่อน</p></div></div>`;
+ if(st===1)return `<div class="ob"><div class="top"><div class="row" style="justify-content:flex-end"><button class="btn ghost small" data-act="skip" style="border:0">ข้าม</button></div>
+   <div class="hero-circle">${chordCard('C',{btn:false,badge:true,size:110})}</div>
+   <div class="stack" style="text-align:center"><h1>เล่นเพลงแรกได้ ตั้งแต่วันนี้</h1><p class="muted">ไม่ต้องอ่านโน้ต ไม่ต้องเก่งก่อน เริ่มจากคอร์ดที่ใช้นิ้วเดียว แล้วค่อยเพิ่มทีละคอร์ด</p></div></div>
+   <div class="bot"><button class="btn block" data-act="next">เริ่มเลย</button></div></div>`;
+ if(st===2)return `<div class="ob"><div class="top">${steps(1)}<h1>มีอูคูเลเลแล้วหรือยัง?</h1><div class="stack" role="radiogroup">${opt('hasUke',true,'🎸','มีแล้ว พร้อมเล่น','ไปตั้งสายกันต่อ')}${opt('hasUke',false,'🛍️','ยังไม่มี','ดูวิธีเลือกซื้อก่อน แล้วค่อยกลับมา')}</div></div><div class="bot"><button class="btn block" data-act="next">ถัดไป</button></div></div>`;
+ if(st===3)return `<div class="ob"><div class="top">${steps(2)}<h1>เคยเล่นมาก่อนไหม?</h1><div class="stack" role="radiogroup">${opt('exp','none','🌱','ไม่เคยเลย','เริ่มจากศูนย์ ไม่ต้องห่วง')}${opt('exp','some','🙂','เคยลองนิดหน่อย','จำคอร์ดได้บ้าง')}${opt('exp','can','🎵','เล่นได้บ้างแล้ว','ข้ามบทเรียนแรก ไปเลือกเพลงได้เลย')}</div></div><div class="bot"><button class="btn block" data-act="next">ถัดไป</button></div></div>`;
+ if(st===4)return `<div class="ob"><div class="top">${steps(3)}<h1>ตั้งสายก่อน 1 นาที</h1><p class="muted">หนีบเครื่องตั้งสายที่หัวอูคู แล้วดีดทีละสาย</p>
+   <div class="card" style="flex-direction:row;align-items:center;gap:16px"><div class="readout" style="flex:none;width:96px"><b style="color:#4ADE80">G</b><small>ตรงแล้ว</small></div><div style="min-width:0"><b style="font-weight:500">ตรงแล้ว เมื่อจอเป็นแบบนี้</b><p class="cap muted">ตัวอักษรถูกสาย เข็มอยู่กลาง หรือจอเป็นสีเขียว (ภาพตัวอย่างจอเครื่องตั้งสายของคุณ)</p></div></div>
+   <div class="str-pick">${['G','C','E','A'].map((n,i)=>`<button aria-pressed="${obTmp.tuned[i]}" data-tune="${i}" style="${obTmp.tuned[i]?`background:var(--f${i+1})`:''}"><b>${n}</b><small>${obTmp.tuned[i]?'ตั้งแล้ว ✓':'แตะเมื่อเสร็จ'}</small></button>`).join('')}</div>
+   <p class="cap muted">แตะที่สายเมื่อเครื่องตั้งสายของคุณขึ้นตัวอักษรนั้นและเป็นสีเขียว</p></div>
+   <div class="bot"><button class="btn block" data-act="next">ตั้งเสร็จแล้ว</button><button class="btn ghost block" data-act="next">ข้ามไปก่อน</button></div></div>`;
+ if(st===5)return `<div class="ob"><div class="top"><span class="eyebrow" style="color:var(--pri-text)">บทเรียนแรก</span><h1>คอร์ดแรกของคุณ: C</h1>
+   <div class="card soft" style="align-items:center">${chordCard('C',{btn:false,size:120})}</div>
+   <div class="howto"><div><span class="fbadge" style="background:var(--f3)">3</span><span>ใช้นิ้วนาง กดสายล่างสุด ช่องที่ 3</span></div><div><span class="fbadge" style="background:var(--soft);color:var(--ink)">✋</span><span>นิ้วอื่นไม่ต้องกด ปล่อยสายเปล่าไว้</span></div><div><span class="fbadge" style="background:var(--pri)">↓</span><span>ดีดทุกสายลงมาเบาๆ หนึ่งครั้ง</span></div></div></div>
+   <div class="bot"><button class="btn block" data-act="firstchord">ดีดแล้ว เสียงใส!</button><button class="btn ghost block" data-play="C">${ic('sound',20)} ฟังเสียงตัวอย่าง</button></div></div>`;
+ return `<div class="ob" style="background:var(--soft);max-width:none"><div class="top" style="max-width:512px;margin:0 auto;width:100%"><div class="celebrate">${[['f1',8,40,10],['f2',88,20,14],['f3',14,200,12],['f4',90,190,10],['pri',45,6,8],['sec',76,110,9],['f3',4,120,8],['f2',62,220,11]].map(([c,x,y,r])=>`<i class="conf" style="left:${x}%;top:${y}px;width:${r*2}px;height:${r*2}px;background:var(--${c})"></i>`).join('')}<div class="ok" style="color:#fff">${ic('check',80)}</div></div>
+   <div class="stack" style="text-align:center"><h1>เล่นคอร์ดแรกได้แล้ว!</h1><p class="muted">ผ่านด่าน 1–2 (เพิ่ม Am, F, G) ก็เล่นเพลงเต็มเพลงได้แล้ว เช่น Have You Ever Seen The Rain และ คนหนังเหนียว</p></div>
+   <div class="row" style="justify-content:center"><span class="chip" style="color:var(--sec-text)">คอร์ดที่ทำได้ ${S.known.length} / 13</span></div></div>
+   <div class="bot" style="max-width:512px;margin:0 auto;width:100%"><button class="btn block" data-act="finish">ไปหน้าแรก</button></div></div>`;}
+
+/* ---------- chord modal ---------- */
+function openChord(name){const ch=CHORDS[name];
+ const steps=ch.dots.length?ch.dots.slice().sort((a,b)=>a[2]-b[2]).map(([s,f,fg])=>`<div><span class="fbadge" style="background:var(--f${fg})">${fg}</span><span>${FINGER[fg]} กด${STR_NAME[s]} ช่องที่ ${f}</span></div>`).join(''):'<div><span class="fbadge" style="background:var(--ok)">0</span><span>ไม่ต้องกดสายไหนเลย ดีดสายเปล่าทั้งสี่สาย</span></div>';
+ $('#modal').innerHTML=`<div class="scrim" data-act="close"><div class="sheet-modal" role="dialog" aria-modal="true" aria-label="วิธีจับคอร์ด ${name}">
+  <div class="row" style="justify-content:space-between"><h2>คอร์ด ${name}</h2><button class="btn ghost small" data-act="close">ปิด</button></div>
+  <div class="row" style="justify-content:center">${diagram(name,150)}</div>
+  <div class="howto">${steps}<div><span class="fbadge" style="background:var(--pri)">↓</span><span>ดีดทุกสายลงมาเบาๆ ฟังว่าทุกสายดังชัด ไม่มีเสียงบอด</span></div></div>
+  <button class="btn soft-btn block" data-play="${name}">${ic('sound',20)} ฟังเสียงคอร์ด ${name}</button>
+  <button class="btn block" data-act="toggle" data-c="${name}" style="${known(name)?'background:var(--ok)':''}">${known(name)?'✓ ทำได้แล้ว (แตะเพื่อยกเลิก)':'ทำได้แล้ว'}</button></div></div>`;
+ $('#modal .sheet-modal button').focus();}
+
+/* ================= RENDER & ROUTING ================= */
+const TABS=[['home','หน้าแรก'],['chords','คอร์ด'],['songs','เพลง'],['tune','ตั้งสาย'],['buy','ซื้ออูคู']];
+function render(keepScroll){const r=$('#root');
+ if(view.name==='ob'){document.body.classList.remove('on-sheet','standing');r.innerHTML=vOb();$('#tabs').innerHTML='';$('#dockwrap').innerHTML='';
+  if(view.step===0)setTimeout(()=>{if(view.name==='ob'&&view.step===0){view.step=1;render();}},1300);return;}
+ const fn={home:vHome,chords:vChords,songs:vSongs,tune:vTune,buy:vBuy,path:vPath,sheet:vSheet}[view.name];
+ const wide=view.name==='sheet'&&view.stand;document.body.classList.toggle('on-sheet',view.name==='sheet');document.body.classList.toggle('standing',wide);
+ r.innerHTML=`<div class="app${wide?' wide':''}"><main>${fn()}</main></div>`;
+ const active={sheet:'songs',path:'home'}[view.name]||view.name;
+ $('#tabs').innerHTML=`<nav class="tabbar" aria-label="เมนูหลัก"><div class="in">${TABS.map(([k,l])=>`<button class="tab" data-go="${k}" ${active===k?'aria-current="page"':''}>${ic(k)}<span>${l}</span></button>`).join('')}</div></nav>`;
+ $('#dockwrap').innerHTML=view.name==='sheet'?dockHTML():'';
+ if(view.name==='sheet'){r.querySelector('main').style.paddingBottom=wide?'120px':'200px'; if(wide)$('.dock .in').style.maxWidth='1040px';}
+ if(!keepScroll)window.scrollTo(0,0);}
+function go(name,extra){stopScroll();view=Object.assign({name,step:0,song:null,stand:false},extra||{});try{history.replaceState(null,'',name==='sheet'?'#'+name:'#'+name)}catch(e){}render();}
+
+/* ---------- autoscroll ---------- */
+const scroll={on:false,speed:0,raf:0,last:0,lock:null,acc:0};
+const SPEEDS=[18,32,52];
+function stepScroll(t){if(!scroll.on)return;const dt=scroll.last?(t-scroll.last)/1000:0;scroll.last=t;scroll.acc+=SPEEDS[scroll.speed]*dt;
+ if(scroll.acc>=1){const px=Math.floor(scroll.acc);scroll.acc-=px;window.scrollBy(0,px);}
+ if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-2){stopScroll();render(true);return;}
+ scroll.raf=requestAnimationFrame(stepScroll);}
+async function startScroll(){scroll.on=true;scroll.last=0;scroll.acc=0;scroll.raf=requestAnimationFrame(stepScroll);
+ try{if(navigator.wakeLock)scroll.lock=await navigator.wakeLock.request('screen');}catch(e){}}
+function stopScroll(){scroll.on=false;cancelAnimationFrame(scroll.raf);try{scroll.lock&&scroll.lock.release();}catch(e){}scroll.lock=null;}
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{const t=e.target.closest('button,[data-act]');if(!t)return;const d=t.dataset;
+ if(d.play){playChord(d.play);return;}
+ if(d.chord){openChord(d.chord);return;}
+ if(d.song){go('sheet',{song:d.song});return;}
+ if(d.go){go(d.go);return;}
+ if(d.cf){S.chordFilter=d.cf;save();render(true);return;}
+ if(d.sf){S.songFilter=d.sf;save();render(true);return;}
+ if(d.opt){const [k,v]=d.opt.split(':');S[k]=v==='true'?true:v==='false'?false:v;save();render();return;}
+ if(d.tune!==undefined){obTmp.tuned[+d.tune]=!obTmp.tuned[+d.tune];render();return;}
+ const a=d.act;
+ if(a==='close'){if(e.target===t||t.tagName==='BUTTON')$('#modal').innerHTML='';return;}
+ if(a==='toggle'){const c=d.c;S.known=known(c)?S.known.filter(x=>x!==c):[...S.known,c];save();
+   const before=STAGES.findIndex((_,i)=>stageState(i)==='now');$('#modal').innerHTML='';render(true);
+   if(known(c)){const ok=SONGS.filter(s=>playable(s)&&s.c.includes(c));toast(ok.length?`เยี่ยม! ตอนนี้เล่นได้ ${SONGS.filter(playable).length} เพลง`:`บันทึกแล้ว: ทำคอร์ด ${c} ได้`);}return;}
+ if(a==='skip'){S.onboarded=true;save();go('home');return;}
+ if(a==='next'){if(view.step===2&&S.hasUke===false){S.onboarded=true;save();go('buy');toast('เลือกเครื่องได้แล้ว กลับมาฝึกที่หน้าแรกได้เลย');return;}
+   if(view.step===3&&S.exp==='can'){if(!known('C'))S.known.push('C');if(!known('Am'))S.known.push('Am');S.onboarded=true;save();go('songs');return;}
+   view.step++;render();return;}
+ if(a==='firstchord'){if(!known('C'))S.known.push('C');save();view.step=6;render();return;}
+ if(a==='finish'){S.onboarded=true;save();go('home');return;}
+ if(a==='reset'){if(t.dataset.confirm){S={onboarded:false,known:[],hasUke:true,exp:'none',lyric:20,songFilter:'all',chordFilter:'all'};save();view={name:'ob',step:0};render();return;}
+   t.dataset.confirm='1';t.textContent='แตะอีกครั้งเพื่อยืนยัน (ลบความคืบหน้าทั้งหมด)';return;}
+ if(a==='stand'){view.stand=!view.stand;render(true);return;}
+ if(a==='auto'){scroll.on?stopScroll():startScroll();$('#dockwrap').innerHTML=dockHTML();if(view.stand)$('.dock .in').style.maxWidth='1040px';return;}
+ if(a==='spd-'||a==='spd+'){scroll.speed=Math.max(0,Math.min(2,scroll.speed+(a==='spd+'?1:-1)));$('#dockwrap').innerHTML=dockHTML();return;}
+ if(a==='fz-'||a==='fz+'){const L=[18,20,24,28];let i=L.indexOf(S.lyric);if(i<0)i=1;i=Math.max(0,Math.min(3,i+(a==='fz+'?1:-1)));S.lyric=L[i];save();
+   const ly=$('.lyrics');if(ly)ly.style.setProperty('--lyric',S.lyric+'px');$('#dockwrap').innerHTML=dockHTML();return;}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('#modal').innerHTML='';});
+window.addEventListener('wheel',()=>{},{passive:true});
+['touchstart','wheel'].forEach(ev=>window.addEventListener(ev,()=>{if(scroll.on){/* user takes over */}},{passive:true}));
+
+/* deep link: #chords, #songs, #tune, #buy, #path */
+(function(){const h=(location.hash||'').slice(1);if(S.onboarded&&['home','chords','songs','tune','buy','path'].includes(h))view.name=h;})();
+render();
+</script>
+
+<script>
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
+</script>
+</body>
+</html>
